@@ -97,18 +97,18 @@ class AiService
             ];
         }
 
-        // --- 3.2 CATERING & EVENTS ---
-        if (str_contains($messageLower, 'catering') || str_contains($messageLower, 'party') || str_contains($messageLower, 'event') || str_contains($messageLower, 'function') || str_contains($messageLower, 'wedding')) {
+        // --- 3.2 CATERING & EVENTS & LARGE PARTIES ---
+        if (str_contains($messageLower, 'party') || str_contains($messageLower, 'gathering') || str_contains($messageLower, 'event') || str_contains($messageLower, 'function') || str_contains($messageLower, 'wedding') || str_contains($messageLower, 'catering')) {
             return [
-                'text' => "Planning a royal celebration? 🎊 We offer specialized **Party Catering** for events of all sizes. Our new inquiry portal allows you to specify your guest count and event type so we can tailor a menu perfectly for your occasion.",
+                'text' => "Planning a royal celebration or a grand event? 🎊 We are perfectly equipped for gatherings of all sizes, with a maximum capacity of **500 seats**! \n\nWhether it's a Wedding, family event, or a large corporate party, our team ensures a majestic experience. Would you like to secure your date on our reservation page?",
                 'action' => [
                     'type' => 'NAVIGATE',
-                    'url' => '/contact?category=party_catering',
-                    'button_text' => 'Inquire for Catering 📋'
+                    'url' => '/reservation',
+                    'button_text' => 'Book Your Event 📅'
                 ],
                 'quick_replies' => [
-                    ['text' => "View Catering Menu", 'message' => "Show me menu"],
-                    ['text' => "General Support", 'message' => "Contact Us"]
+                    ['text' => "View Menu 🥘", 'message' => "Food Menu"],
+                    ['text' => "Inquire for Catering 📋", 'message' => "Tell me about catering"]
                 ]
             ];
         }

@@ -137,7 +137,7 @@ export default function Reservation({ auth }) {
                                 {data.guests && (
                                     <div className="mt-2 flex gap-2">
                                         {parseInt(data.guests) <= 10 && <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30">Small Gathering</span>}
-                                        {parseInt(data.guests) > 10 && parseInt(data.guests) <= 50 && <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">Medium Party</span>}
+                                        {parseInt(data.guests) > 10 && parseInt(data.guests) <= 50 && <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">Party</span>}
                                         {parseInt(data.guests) > 50 && parseInt(data.guests) <= 500 && <span className="px-3 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30">Big Party</span>}
                                         {parseInt(data.guests) > 500 && <span className="px-3 py-1 bg-red-500/20 text-red-400 text-xs rounded-full border border-red-500/30">Max Capacity Exceeded</span>}
                                     </div>

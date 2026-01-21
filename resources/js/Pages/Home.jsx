@@ -37,8 +37,18 @@ export default function Home({ auth, signatureDishes }) {
                         <div className="relative group">
                             <div className="absolute -inset-4 bg-royal-gold/10 rounded-3xl blur-2xl group-hover:bg-royal-gold/20 transition duration-700"></div>
                             <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 p-2 rounded-3xl overflow-hidden shadow-2xl">
-                                <img src="/images/hero.png" alt="Royal Heritage" className="w-full h-[500px] object-cover rounded-2xl grayscale-[20%] group-hover:grayscale-0 transition duration-700" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                <video
+                                    src="/videos/Royal Dine Resturant UK.mp4"
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    className="w-full h-[500px] object-cover rounded-2xl grayscale-[20%] group-hover:grayscale-0 transition duration-700"
+                                    poster="/images/hero.png"
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
                                 <div className="absolute bottom-10 left-10">
                                     <p className="text-royal-gold font-playfair text-3xl italic">"A Legacy of Spices"</p>
                                 </div>
