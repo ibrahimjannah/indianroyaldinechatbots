@@ -6,11 +6,21 @@ self.addEventListener('install', (event) => {
                 '/menu',
                 '/reservation',
                 '/contact',
-                '/build/assets/app.css',
-                '/build/assets/app.js',
+                '/fonts/google-fonts.css',
+                '/fonts/playfair-regular.ttf',
+                '/fonts/playfair-bold.ttf',
+                '/fonts/poppins-300.ttf',
+                '/fonts/poppins-regular.ttf',
+                '/fonts/poppins-500.ttf',
+                '/fonts/poppins-600.ttf',
+                '/fonts/poppins-700.ttf',
+                '/vendor/fontawesome/css/all.min.css',
+                '/vendor/fontawesome/webfonts/fa-solid-900.woff2',
+                '/vendor/fontawesome/webfonts/fa-brands-400.woff2',
                 '/images/hero.png',
                 '/images/butter-chicken.png',
-                '/images/biryani.png'
+                '/images/biryani.png',
+                '/videos/Royal Dine Resturant UK.mp4'
             ]);
         })
     );
