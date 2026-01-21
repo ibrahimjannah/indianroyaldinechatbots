@@ -19,6 +19,32 @@ class AiService
     {
         $messageLower = trim(strtolower($message));
 
+        // --- SYNONYM DICTIONARY FOR BETTER MATCHING ---
+        $synonyms = [
+            'spicy' => ['hot', 'chili', 'heat', 'spice'],
+            'mild' => ['not spicy', 'no heat', 'gentle', 'light'],
+            'vegetarian' => ['veg', 'veggie', 'plant-based', 'no meat'],
+            'vegan' => ['plant', 'plant-based', 'no dairy', 'no animal'],
+            'healthy' => ['organic', 'wellness', 'nutritious', 'natural', 'clean'],
+            'cheap' => ['budget', 'affordable', 'inexpensive', 'economical'],
+            'expensive' => ['premium', 'luxury', 'high-end', 'pricey'],
+            'location' => ['where', 'address', 'directions', 'find you'],
+            'hours' => ['open', 'timing', 'time', 'when', 'schedule'],
+            'gluten' => ['gluten-free', 'no gluten', 'celiac'],
+            'dairy' => ['dairy-free', 'no dairy', 'lactose'],
+            'nuts' => ['nut-free', 'no nuts', 'allergy'],
+        ];
+
+        // Expand message with synonyms
+        foreach ($synonyms as $key => $values) {
+            foreach ($values as $synonym) {
+                if (str_contains($messageLower, $synonym)) {
+                    $messageLower .= ' ' . $key;
+                    break;
+                }
+            }
+        }
+
 
         // --- 1. GREETING & CHIT-CHAT (Highest Priority) ---
         if (str_contains($messageLower, 'how are you') || str_contains($messageLower, 'how are things') || str_contains($messageLower, 'how it going')) {
@@ -44,14 +70,29 @@ class AiService
 
         // --- 2. TOPIC GUARDIAN (Strictly Restaurant Related) ---
         $allowedKeywords = [
+            // Food & Menu
             'food', 'menu', 'eat', 'hungry', 'price', 'dish', 'curry', 'biryani', 'chicken', 'lamb', 'veg', 'momo', 'salmon', 'tandoor', 'organic', 'vegan', 'plant', 'wellness', 'bowl',
+            'appetizer', 'starter', 'main', 'dessert', 'drink', 'beverage', 'rice', 'bread', 'naan', 'roti',
+            // Dietary & Preferences
+            'spicy', 'mild', 'hot', 'vegetarian', 'healthy', 'gluten', 'dairy', 'nuts', 'halal', 'allergy',
+            // Cooking Methods
+            'grilled', 'fried', 'baked', 'roasted', 'steamed', 'tandoori',
+            // Reservations
             'book', 'reserve', 'table', 'reservation', 'time', 'hour', 'date',
+            // Feedback
             'complaint', 'bad', 'issue', 'problem', 'complain', 'feedback', 'wrong',
-            'contact', 'address', 'location', 'phone', 'email', 'where', 'call',
+            // Contact & Location
+            'contact', 'address', 'location', 'phone', 'email', 'where', 'call', 'hours', 'open', 'timing',
+            // Account
             'profile', 'account', 'login', 'signup', 'register', 'setting', 'my orders', 'past order', 'history',
+            // Orders
             'checkout', 'pay', 'order', 'cart', 'buy', 'delivery',
+            // Promotions
             'coupon', 'discount', 'promo', 'code', 'offer',
-            'hello', 'hi', 'hey', 'help', 'what can you do', 'who are you', 'heritage', 'tradition', 'story', 'history', 'legacy', 'precision', 'team', 'crew', 'rowing', 'catering', 'party', 'event', 'function'
+            // About Us
+            'hello', 'hi', 'hey', 'help', 'what can you do', 'who are you', 'heritage', 'tradition', 'story', 'history', 'legacy', 'precision', 'team', 'crew', 'rowing', 'catering', 'party', 'event', 'function',
+            // Categories
+            'signature', 'popular', 'recommended', 'special'
         ];
 
         $isTopicRelated = false;
@@ -109,6 +150,92 @@ class AiService
                 'quick_replies' => [
                     ['text' => "View Menu 🥘", 'message' => "Food Menu"],
                     ['text' => "Inquire for Catering 📋", 'message' => "Tell me about catering"]
+                ]
+            ];
+        }
+
+        // --- 3.3 DIETARY PREFERENCES & HEALTHY OPTIONS ---
+        if (str_contains($messageLower, 'healthy') || str_contains($messageLower, 'organic') || str_contains($messageLower, 'wellness') || str_contains($messageLower, 'nutritious') || str_contains($messageLower, 'natural')) {
+            $organicItems = Menu::whereHas('category', function($q) {
+                $q->where('name', 'Royal Organic');
+            })->take(4)->get();
+            
+            return [
+                'text' => "Our **Royal Organic** range is crafted with exclusively organic chicken, lamb, and vegetables! 🌱 We believe in serving nutritious, natural ingredients without compromising on authentic royal flavors.",
+                'items' => $organicItems->map(fn($i) => [
+                    'id'=>$i->id, 
+                    'name'=>$i->name, 
+                    'price'=>$i->price, 
+                    'image'=>$i->image ? (str_starts_with($i->image, '/') ? $i->image : asset('storage/'.$i->image)) : '/images/placeholder-food.png', 
+                    'description'=>$i->description,
+                    'badge' => 'Organic'
+                ])->toArray(),
+                'quick_replies' => [
+                    ['text' => "Plant-Based Options 🌿", 'message' => "Show me vegan"],
+                    ['text' => "Full Menu 🥘", 'message' => "Food Menu"]
+                ]
+            ];
+        }
+
+        // --- 3.4 VEGAN & PLANT-BASED ---
+        if (str_contains($messageLower, 'vegan') || str_contains($messageLower, 'plant') || str_contains($messageLower, 'vegetarian')) {
+            $vegItems = Menu::where('name', 'like', '%veg%')
+                ->orWhere('description', 'like', '%veg%')
+                ->orWhere('description', 'like', '%plant%')
+                ->take(4)->get();
+            
+            return [
+                'text' => "We offer exquisite **Plant-Based Perfection** options! 🌿 Our vegetarian and vegan dishes are prepared with the same royal dedication to authentic spices and traditional techniques.",
+                'items' => $vegItems->map(fn($i) => [
+                    'id'=>$i->id, 
+                    'name'=>$i->name, 
+                    'price'=>$i->price, 
+                    'image'=>$i->image ? (str_starts_with($i->image, '/') ? $i->image : asset('storage/'.$i->image)) : '/images/placeholder-food.png', 
+                    'description'=>$i->description,
+                    'badge' => 'Vegetarian'
+                ])->toArray(),
+                'quick_replies' => [
+                    ['text' => "Organic Range 🌱", 'message' => "Show me organic"],
+                    ['text' => "Full Menu 🥘", 'message' => "Food Menu"]
+                ]
+            ];
+        }
+
+        // --- 3.5 SPICE LEVEL QUERIES ---
+        if (str_contains($messageLower, 'spicy') || str_contains($messageLower, 'mild') || str_contains($messageLower, 'hot')) {
+            $spicePreference = str_contains($messageLower, 'mild') || str_contains($messageLower, 'not spicy') || str_contains($messageLower, 'no heat') ? 0 : 2;
+            $items = Menu::where('spice_level', '<=', $spicePreference)->take(4)->get();
+            
+            $spiceText = $spicePreference === 0 
+                ? "Our **mild** dishes are perfect for those who prefer gentle flavors! 😊"
+                : "Looking for some **heat**? 🌶️ Here are our spicier royal selections!";
+            
+            return [
+                'text' => $spiceText,
+                'items' => $items->map(fn($i) => [
+                    'id'=>$i->id, 
+                    'name'=>$i->name, 
+                    'price'=>$i->price, 
+                    'image'=>$i->image ? (str_starts_with($i->image, '/') ? $i->image : asset('storage/'.$i->image)) : '/images/placeholder-food.png', 
+                    'description'=>$i->description,
+                    'badge' => $i->spice_level === 0 ? 'Mild' : ($i->spice_level === 1 ? 'Medium' : 'Spicy')
+                ])->toArray(),
+                'quick_replies' => [['text' => "Full Menu 🥘", 'message' => "Food Menu"]]
+            ];
+        }
+
+        // --- 3.6 LOCATION & HOURS ---
+        if (str_contains($messageLower, 'location') || str_contains($messageLower, 'hours') || str_contains($messageLower, 'timing') || str_contains($messageLower, 'open')) {
+            return [
+                'text' => "📍 **Location**: Crown Plaza, 123 Royal Street, London\n\n⏰ **Hours**:\nMon-Thu: 12:00 PM - 10:00 PM\nFri-Sat: 12:00 PM - 11:00 PM\nSunday: 12:00 PM - 9:00 PM\n\n📞 **Phone**: +44 20 1234 5678",
+                'action' => [
+                    'type' => 'NAVIGATE',
+                    'url' => '/contact',
+                    'button_text' => 'Get Directions 🗺️'
+                ],
+                'quick_replies' => [
+                    ['text' => "Book a Table 📅", 'message' => "Book Table"],
+                    ['text' => "View Menu 🥘", 'message' => "Food Menu"]
                 ]
             ];
         }
