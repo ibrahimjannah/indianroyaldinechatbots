@@ -24,7 +24,7 @@ class ReservationController extends Controller
             'phone' => 'required|string|max:20',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|string',
-            'guests' => 'required|integer|min:1|max:20',
+            'guests' => 'required|integer|min:1|max:500',
             'requests' => 'nullable|string|max:1000',
         ]);
 

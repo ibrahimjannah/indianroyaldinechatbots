@@ -125,19 +125,24 @@ export default function Reservation({ auth }) {
 
                             <div>
                                 <label className="block text-gray-300 mb-2 font-medium">Number of Guests</label>
-                                <select
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="500"
                                     value={data.guests}
                                     onChange={e => setData('guests', e.target.value)}
-                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-royal-gold focus:border-transparent text-white"
+                                    className={`w-full px-5 py-4 bg-white/5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-royal-gold focus:border-transparent transition text-white placeholder-gray-500 ${errors.guests ? 'border-red-500/50' : 'border-white/10'}`}
                                     required
-                                >
-                                    <option value="1" className="bg-gray-900">1 Person</option>
-                                    <option value="2" className="bg-gray-900">2 People</option>
-                                    <option value="3" className="bg-gray-900">3 People</option>
-                                    <option value="4" className="bg-gray-900">4 People</option>
-                                    <option value="5" className="bg-gray-900">5 People</option>
-                                    <option value="6" className="bg-gray-900">6 People</option>
-                                </select>
+                                />
+                                {data.guests && (
+                                    <div className="mt-2 flex gap-2">
+                                        {parseInt(data.guests) <= 10 && <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30">Small Gathering</span>}
+                                        {parseInt(data.guests) > 10 && parseInt(data.guests) <= 50 && <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">Medium Party</span>}
+                                        {parseInt(data.guests) > 50 && parseInt(data.guests) <= 500 && <span className="px-3 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30">Big Party</span>}
+                                        {parseInt(data.guests) > 500 && <span className="px-3 py-1 bg-red-500/20 text-red-400 text-xs rounded-full border border-red-500/30">Max Capacity Exceeded</span>}
+                                    </div>
+                                )}
+                                {errors.guests && <p className="text-red-400 text-xs mt-2 pl-1">{errors.guests}</p>}
                             </div>
 
                             <div className="md:col-span-2">
